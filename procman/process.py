@@ -14,27 +14,27 @@ class SizeProc:
             case 0:
                 return f"{round(self.bytes, 1)}B"
             case 1:
-                return f"{round(self.kbytes, 1)}KB"
+                return f"{round(self.kb, 1)}KB"
             case 2:
-                return f"{round(self.mbytes, 1)}MB"
+                return f"{round(self.mb, 1)}MB"
             case _:
-                return f"{round(self.gbytes, 1)}GB"
+                return f"{round(self.gb, 1)}GB"
 
     @property
     def bytes(self) -> float:
         return self._bytes
 
     @property
-    def kbytes(self) -> float:
+    def kb(self) -> float:
         return self.bytes / 1024
 
     @property
-    def mbytes(self) -> float:
-        return self.kbytes / 1024
+    def mb(self) -> float:
+        return self.kb / 1024
 
     @property
-    def gbytes(self) -> float:
-        return self.mbytes / 1024
+    def gb(self) -> float:
+        return self.mb / 1024
 
 
 class TimeProc:
@@ -42,22 +42,22 @@ class TimeProc:
         self._time: timedelta = val
 
     def __repr__(self) -> str:
-        if self.minutes > 59:
-            return f"{round(self.hours, 2)}hr"
+        if self.min > 59:
+            return f"{round(self.hrs, 2)}hr"
 
-        elif self.seconds > 59:
-            return f"{round(self.minutes, 2)}m"
+        elif self.sec > 59:
+            return f"{round(self.min, 2)}m"
 
-        return f"{round(self.seconds, 2)}s"
+        return f"{round(self.sec, 2)}s"
 
     @property
-    def seconds(self) -> float:
+    def sec(self) -> float:
         return self._time.total_seconds()
 
     @property
-    def minutes(self) -> float:
-        return self.seconds / 60
+    def min(self) -> float:
+        return self.sec / 60
 
     @property
-    def hours(self) -> float:
-        return self.minutes / 60
+    def hrs(self) -> float:
+        return self.min / 60
