@@ -1,6 +1,7 @@
 from datetime import datetime
 from threading import Thread
 from psutil import Process
+
 import psutil
 
 from .units import SizeProc, TimeProc
@@ -24,6 +25,7 @@ class Proc:
         Returns:
             bool: True if the names are equal, False otherwise.
         """
+        # TODO Might need to add more
         return isinstance(other, Proc) and other.name == self.name
 
     @property

@@ -11,3 +11,34 @@ This is a university project, for **Operating Systems** subject.
 | Shakoor Khanzada           | 2021F-BCE-082 |
 | Arshiyan Elahi             | 2021F-BCE-089 |
 | M. Shaheer Sharif          | 2021F-BCE-218 |
+
+## Install project
+
+* **Using git**  
+`git clone https://github.com/ShaheerSharif/procman.git`
+
+## Install required packages
+
+```bash
+# cd into project
+cd procman
+
+# Create venv
+python -m venv venv
+
+# Activate venv
+source venv/bin/activate
+
+# Install required packages
+pip install -r requirements.txt
+```
+
+## Run module
+
+```bash
+# Start process manager
+python -m procman -s
+
+# OR Bring help menu
+python -m procman -h
+```

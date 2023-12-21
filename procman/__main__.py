@@ -1,40 +1,44 @@
 import curses
-import platform
+import sys
 
-SYSTEM_INFO: dict[str, str] = {
-    "os": f"OS: {platform.system()}",
-    "release": f"Release: {platform.release()}",
-    "arch": f"Architecture: {platform.machine()}",
+from .procman import App
+
+COMMANDS: dict[str, list[str]] = {
+    "help": ["-h", "--help", "help"],
+    "start": ["-s", "--start", "start"],
 }
 
 
-def startscreen(stdscr) -> None:
-    (ROWS, COLS) = stdscr.getmaxyx()
-    title: str = "Welcome To Procman"
-    prompt: str = "Press any key to start"
+invalid_arg_text: str = f"""
+Invalid argument: unrecognized option(s) '{[sys.argv[i] for i in range(1, len(sys.argv))]}'
+"""
 
-    titlewin = curses.newwin(ROWS, COLS, 0, 0)
-    titlewin.border()
+error_text: str = "Error: no operation specified (use '-h' for help)"
 
-    titlewin.addstr(2, (COLS // 2) - (len(title) // 2), title, curses.A_BOLD)
-    titlewin.addstr(6, 2, SYSTEM_INFO["os"])
-    titlewin.addstr(8, 2, SYSTEM_INFO["release"])
-    titlewin.addstr(10, 2, SYSTEM_INFO["arch"])
-    titlewin.addstr(
-        ROWS // 2 - 1, (COLS // 2) - (len(title) // 2), prompt, curses.A_BLINK
-    )
+help_text: str = f"""
+Usage: procman <operation>
 
-    titlewin.getch()
+Operations:
+    procman {str(COMMANDS['start']):>27}  start
+    procman {str(COMMANDS['help']):>27}  help
 
-    stdscr.touchwin()
-    stdscr.refresh()
+For help menu use 'procman -h'
+"""
 
 
-def App(stdscr):
-    curses.curs_set(0)
-
-    startscreen(stdscr)
+def main() -> None:
+    if len(sys.argv) == 2:
+        if sys.argv[1] in COMMANDS["start"]:
+            curses.wrapper(App)
+        elif sys.argv[1] in COMMANDS["help"]:
+            print(help_text)
+        else:
+            print(invalid_arg_text)
+    elif len(sys.argv) < 2:
+        print(error_text)
+    else:
+        print(invalid_arg_text)
 
 
 if __name__ == "__main__":
-    curses.wrapper(App)
+    main()
