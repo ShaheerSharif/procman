@@ -1,63 +1,82 @@
-from math import log2
-from datetime import timedelta
+from datetime import datetime
+from threading import Thread
+from psutil import Process
+import psutil
+
+from .units import SizeProc, TimeProc
 
 
-class SizeProc:
-    def __init__(self, val: float) -> None:
-        self._bytes: float = val
+class Proc:
+    def __init__(self, process: Process) -> None:
+        self._process: Process = process
+        self._start: TimeProc = TimeProc(0)
+        self._cpu_usage: float = 0
+        self._thread: Thread = None
+        self.name = process.name()
 
-    def __repr__(self) -> str:
-        # ! May need to use `round` function
-        tempsize: int = 0 if (self._bytes == 0) else (int)(log2(self._bytes) / 10)
+    def __eq__(self, other):
+        """
+        Checks if two Proc instances are equal based on their names.
 
-        match tempsize:
-            case 0:
-                return f"{round(self.bytes, 1)}B"
-            case 1:
-                return f"{round(self.kb, 1)}KB"
-            case 2:
-                return f"{round(self.mb, 1)}MB"
-            case _:
-                return f"{round(self.gb, 1)}GB"
+        Parameters:
+            other (Proc): Another Proc instance.
 
-    @property
-    def bytes(self) -> float:
-        return self._bytes
-
-    @property
-    def kb(self) -> float:
-        return self.bytes / 1024
+        Returns:
+            bool: True if the names are equal, False otherwise.
+        """
+        return isinstance(other, Proc) and other.name == self.name
 
     @property
-    def mb(self) -> float:
-        return self.kb / 1024
+    def active(self) -> bool:
+        return self._process.is_running()
 
     @property
-    def gb(self) -> float:
-        return self.mb / 1024
-
-
-class TimeProc:
-    def __init__(self, val: timedelta) -> None:
-        self._time: timedelta = val
-
-    def __repr__(self) -> str:
-        if self.min > 59:
-            return f"{round(self.hrs, 2)}hr"
-
-        elif self.sec > 59:
-            return f"{round(self.min, 2)}m"
-
-        return f"{round(self.sec, 2)}s"
+    def pid(self) -> int:
+        return self._process.pid if (self.active) else -1
 
     @property
-    def sec(self) -> float:
-        return self._time.total_seconds()
+    def ppid(self) -> int:
+        return self._process.ppid() if (self.active) else -1
 
-    @property
-    def min(self) -> float:
-        return self.sec / 60
+    def uptime(self) -> TimeProc:
+        if self.active:
+            return TimeProc(datetime.now() - self._start)
+        return TimeProc(0)
 
-    @property
-    def hrs(self) -> float:
-        return self.min / 60
+    def get_mem_perc(self) -> float:
+        return Process(self.pid).memory_percent("vms") if (self.active) else 0
+
+    def get_mem_usage(self) -> SizeProc:
+        if self.active:
+            return SizeProc(Process(self.pid).memory_info().vms)
+        return SizeProc(0)
+
+    def update_cpu(self) -> None:
+        try:
+            self._cpu_usage = (
+                psutil.Process(self.pid).cpu_percent(0.1) / psutil.cpu_count()
+            )
+        except psutil.NoSuchProcess:
+            pass
+
+    def get_cpu_perc(self) -> float:
+        """
+        Retrieves the CPU usage percentage.
+
+        Returns:
+            float: CPU usage percentage if active, otherwise 0.
+        """
+        if self.active:
+            if self._thread is None or not self._thread.is_alive():
+                self._thread = Thread(target=self.update_cpu)
+                self._thread.setDaemon(True)
+                self._thread.start()
+            return self._cpu_usage
+        return 0
+
+    def kill(self) -> None:
+        """
+        Kills the process and resets the start time.
+        """
+        self._start = TimeProc(0)
+        self._process.kill()
