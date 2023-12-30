@@ -6,6 +6,7 @@ from rich.table import Table
 from rich.console import Console
 from rich.live import Live
 
+from . import sort
 
 app = typer.Typer()
 
@@ -16,7 +17,7 @@ def create_process_table(rows: int) -> Table:
         "Name",
         "PID",
         "PPID",
-        "Memory Usage",
+        "Mem Usage",
         "Uptime",
         "Status",
         title="Process Manager",

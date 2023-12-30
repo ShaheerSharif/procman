@@ -1,5 +1,4 @@
-from datetime import datetime
-from threading import Thread
+from time import time
 from psutil import Process
 
 from .units import SizeProc, TimeProc
@@ -8,9 +7,8 @@ from .units import SizeProc, TimeProc
 class Proc:
     def __init__(self, process: Process) -> None:
         self._process: Process = process
-        self._start: datetime = datetime.now()
+        self._start: float = process.create_time()
         self._cpu_perc: float = 0
-        self._thread: Thread = None
 
     def __eq__(self, other):
         return isinstance(other, Proc) and other.pid == self.pid
@@ -37,7 +35,7 @@ class Proc:
 
     def uptime(self) -> TimeProc:
         if self.active:
-            return TimeProc(datetime.now() - self._start)
+            return TimeProc(time() - self._start)
         return TimeProc(0)
 
     def get_mem_perc(self) -> float:
