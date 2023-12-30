@@ -21,8 +21,6 @@ This is a university project, for **Operating Systems** subject.
 
 ```bash
 # cd into project
-cd procman
-
 # Create venv
 python -m venv venv
 
