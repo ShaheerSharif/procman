@@ -3,10 +3,5 @@ venv/
 test/
 build/
 dist/
-*.ico
+procman/__pycache__/
 *.spec
-
-phelp.sh
-pinvarg.sh
-pnoarg.sh
-pstart.sh

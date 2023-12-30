@@ -5,7 +5,6 @@ from .sort import generate_proc_list
 from rich.table import Table
 from rich.console import Console
 from rich.live import Live
-from rich.style import Style
 
 
 app = typer.Typer()
