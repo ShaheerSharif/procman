@@ -20,6 +20,9 @@ class SizeProc:
             case _:
                 return f"{round(self.gb, 1)}GB"
 
+    def __eq__(self, __value: object) -> bool:
+        return isinstance(__value, SizeProc) and self._bytes == __value._bytes
+
     @property
     def bytes(self) -> float:
         return self._bytes
@@ -49,6 +52,12 @@ class TimeProc:
             return f"{round(self.min, 2)}m"
 
         return f"{round(self.sec, 2)}s"
+
+    def __eq__(self, __value: object) -> bool:
+        return (
+            isinstance(__value, TimeProc)
+            and self._time.total_seconds() == __value._time.total_seconds()
+        )
 
     @property
     def sec(self) -> float:

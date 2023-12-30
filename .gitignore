@@ -3,3 +3,10 @@ venv/
 test/
 build/
 dist/
+*.ico
+*.spec
+
+phelp.sh
+pinvarg.sh
+pnoarg.sh
+pstart.sh
