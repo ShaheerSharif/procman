@@ -31,9 +31,11 @@ def create_process_table(rows: int) -> Table:
             str(proc.ppid),
             str(proc.get_mem_usage()),
             str(proc.uptime()),
-            "[bold green]Running[/bold green]"
-            if proc.active
-            else "[bold red]IDLE[/bold red]",
+            (
+                "[bold green]Running[/bold green]"
+                if proc.active
+                else "[bold red]IDLE[/bold red]",
+            ),
         )
 
     return table
