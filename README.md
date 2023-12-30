@@ -37,8 +37,5 @@ pip install -r requirements.txt
 
 ```bash
 # Start process manager
-python -m procman -s
-
-# OR Bring help menu
-python -m procman -h
+python -m procman
 ```
