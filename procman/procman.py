@@ -5,6 +5,7 @@ from .sort import generate_proc_list
 from rich.table import Table
 from rich.console import Console
 from rich.live import Live
+from rich.style import Style
 
 
 app = typer.Typer()
@@ -31,7 +32,9 @@ def create_process_table(rows: int) -> Table:
             str(proc.ppid),
             str(proc.get_mem_usage()),
             str(proc.uptime()),
-            "Running[bold green]" if proc.active else "IDLE[bold red]",
+            "[bold green]Running[/bold green]"
+            if proc.active
+            else "[bold red]IDLE[/bold red]",
         )
 
     return table
