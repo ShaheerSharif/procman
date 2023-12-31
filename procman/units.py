@@ -1,13 +1,13 @@
 from math import log2
 
 
-class SizeProc:
+class _SizeProc:
     def __init__(self, val: float) -> None:
-        self._bytes: float = val
+        self.__bytes: float = val
 
     def __repr__(self) -> str:
         # ! May need to use `round` function
-        tempsize: int = 0 if (self._bytes == 0) else (int)(log2(self._bytes) / 10)
+        tempsize: int = 0 if (self.__bytes == 0) else (int)(log2(self.__bytes) / 10)
 
         match tempsize:
             case 0:
@@ -20,11 +20,11 @@ class SizeProc:
                 return f"{round(self.gb, 1):<7}GB"
 
     def __eq__(self, __value: object) -> bool:
-        return isinstance(__value, SizeProc) and self._bytes == __value._bytes
+        return isinstance(__value, _SizeProc) and self.__bytes == __value.__bytes
 
     @property
     def bytes(self) -> float:
-        return self._bytes
+        return self.__bytes
 
     @property
     def kb(self) -> float:
@@ -39,9 +39,9 @@ class SizeProc:
         return self.mb / 1024
 
 
-class TimeProc:
+class _TimeProc:
     def __init__(self, sec: float) -> None:
-        self._sec: float = sec
+        self.__sec: float = sec
 
     def __repr__(self) -> str:
         if self.hrs > 24:
@@ -56,11 +56,11 @@ class TimeProc:
         return f"{round(self.sec, 2):<6}sec"
 
     def __eq__(self, val: object) -> bool:
-        return isinstance(val, TimeProc) and self._sec == val._sec
+        return isinstance(val, _TimeProc) and self.__sec == val.__sec
 
     @property
     def sec(self) -> float:
-        return self._sec
+        return self.__sec
 
     @property
     def min(self) -> float:
@@ -73,3 +73,13 @@ class TimeProc:
     @property
     def days(self) -> float:
         return self.hrs / 24
+
+
+class _StatusProc:
+    def __init__(self, running: bool) -> None:
+        self.running: bool = running
+
+    def __repr__(self) -> str:
+        if self.running:
+            return "[bold green]Running[/bold green]"
+        return "[bold red]IDLE[/bold red]"

@@ -1,51 +1,52 @@
 from time import time
 from psutil import Process
 
-from .units import SizeProc, TimeProc
+from .units import _SizeProc, _TimeProc, _StatusProc
 
 
 class Proc:
     def __init__(self, process: Process) -> None:
-        self._process: Process = process
-        self._start: float = process.create_time()
-        self._cpu_perc: float = 0
+        self.__process: Process = process
+        self.__start: float = process.create_time()
 
     def __eq__(self, other):
         return isinstance(other, Proc) and other.pid == self.pid
 
     @property
     def name(self) -> str:
-        return self._process.name()
+        return self.__process.name()
 
     @property
-    def username(self) -> str:
-        return self._process.username()
-
-    @property
-    def active(self) -> bool:
-        return self._process.is_running()
+    def uname(self) -> str:
+        return self.__process.username()
 
     @property
     def pid(self) -> int:
-        return self._process.pid
+        return self.__process.pid
 
     @property
     def ppid(self) -> int:
-        return self._process.ppid()
+        return self.__process.ppid()
 
-    def uptime(self) -> TimeProc:
-        if self.active:
-            return TimeProc(time() - self._start)
-        return TimeProc(0)
+    def is_running(self) -> bool:
+        return self.__process.is_running()
+
+    def status(self) -> str:
+        return str(_StatusProc(self.is_running()))
+
+    def uptime(self) -> _TimeProc:
+        if self.is_running():
+            return _TimeProc(time() - self.__start)
+        return _TimeProc(0)
 
     def get_mem_perc(self) -> float:
-        return Process(self.pid).memory_percent("vms") if (self.active) else 0
+        return Process(self.pid).memory_percent("vms") if (self.is_running()) else 0
 
-    def get_mem_usage(self) -> SizeProc:
-        if self.active:
-            return SizeProc(self._process.memory_info()[0])  # Get size in bytes
-        return SizeProc(0)
+    def get_mem_usage(self) -> _SizeProc:
+        if self.is_running():
+            return _SizeProc(self.__process.memory_info()[0])  # Get size in bytes
+        return _SizeProc(0)
 
     def kill(self) -> None:
-        self._start = 0
-        self._process.kill()
+        self.__start = 0
+        self.__process.kill()
