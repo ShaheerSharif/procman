@@ -1,7 +1,12 @@
 from time import time
 from psutil import Process
+import psutil
 
 from .units import _SizeProc, _TimeProc, _StatusProc
+
+
+class ProcException(Exception):
+    pass
 
 
 class Proc:
@@ -35,7 +40,7 @@ class Proc:
         return str(_StatusProc(self.is_running()))
 
     def uptime(self) -> _TimeProc:
-        if self.is_running():
+        if self.__process.is_running():
             return _TimeProc(time() - self.__start)
         return _TimeProc(0)
 
@@ -50,3 +55,12 @@ class Proc:
     def kill(self) -> None:
         self.__start = 0
         self.__process.kill()
+
+    def check_proc(self) -> None:
+        try:
+            if not self.__process.is_running():
+                self.__process = None
+                self.__start = 0
+        except (psutil.AccessDenied, psutil.NoSuchProcess, psutil.ZombieProcess):
+            self.__process = None
+            self.__start = 0
